@@ -2,13 +2,21 @@ from huggingface_hub import InferenceClient
 import json
 from dotenv import load_dotenv
 import os
-
 load_dotenv()
-client = InferenceClient(provider="hf-inference", api_key=os.getenv("HF_TOKEN"))
 
-result = client.text_classification(
-    "I like you. I love you",
-    model="distilbert/distilbert-base-uncased-finetuned-sst-2-english",
-)
-json_result = json.dumps(result, indent=2)
-print(json_result)
+def sentiment_analyzer(text_to_analyse):
+
+    MODEL="distilbert/distilbert-base-uncased-finetuned-sst-2-english"
+    HF_TOKEN=os.getenv("HF_TOKEN")
+    client = InferenceClient(provider="hf-inference", api_key=HF_TOKEN)
+
+    #received result as py list
+    result = client.text_classification(
+       text_to_analyse,
+        model=MODEL,
+    )
+    label=result[0].label
+    score=result[0].score
+
+    return ({"Label": label,"score": score})
+
